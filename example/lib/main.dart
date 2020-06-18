@@ -43,27 +43,17 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  CameraController _c = CameraController();
+
   @override
   Widget build(BuildContext context) {
-    CameraController _c = CameraController();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Stack(children: <Widget>[
-            CameraPreview(controller: _c,),
-            Positioned(
-                bottom: 30,
-                child: FloatingActionButton(
-                  onPressed: (){
-                    _c.takePhoto();
-                  },
-                )
-            )
-
-          ],),
+          child: CameraPreview(controller: _c,)
         ),
       ),
     );

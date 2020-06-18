@@ -1,4 +1,5 @@
 #import "CustomCameraPlugin.h"
+#import "CameraPreviewFactory.h"
 
 @implementation CustomCameraPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -7,6 +8,9 @@
             binaryMessenger:[registrar messenger]];
   CustomCameraPlugin* instance = [[CustomCameraPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+    
+  CameraPreviewFactory *factory = [[CameraPreviewFactory alloc] initWithMessenger:[registrar messenger]];
+  [registrar registerViewFactory:factory withId:@"plugins/custom_camera"];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
