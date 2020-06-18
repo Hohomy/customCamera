@@ -57,6 +57,7 @@
         NSDictionary *dic =  (NSDictionary *)call.arguments;
         if (dic[@"path"]) {
             [self takePhoto:dic[@"path"]];
+            result(@"success");
         }
     } else {
         result(FlutterMethodNotImplemented);
