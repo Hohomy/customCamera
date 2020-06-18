@@ -43,9 +43,10 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  CameraController _c = CameraController();
+
   @override
   Widget build(BuildContext context) {
-    CameraController _c = CameraController();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(

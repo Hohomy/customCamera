@@ -56,20 +56,25 @@ class _CameraPreviewState extends State<CameraPreview> {
         creationParams: <String,dynamic>{
           "previewSizeWidth":widget.previewSizeWidth,
           "previewSizeHeight":widget.previewSizeHeight,
-
         },
         creationParamsCodec: new StandardMessageCodec(),
-
+      );
+    } else {
+      return AndroidView(
+        viewType: "plugins/custom_camera",
+        onPlatformViewCreated:_onPlatformViewCreated,
+        creationParams: <String,dynamic>{
+          "previewSizeWidth":widget.previewSizeWidth,
+          "previewSizeHeight":widget.previewSizeHeight,
+        },
+        creationParamsCodec: new StandardMessageCodec(),
       );
     }
     return Text('activity_indicator插件尚不支持$defaultTargetPlatform ');
   }
 
   void _onPlatformViewCreated(int id){
-    if(widget.onCameraPreviewWidgetCreated == null){
-      return;
-    }
-  widget.controller.setChannel(id);
+    widget.controller.setChannel(id);
   }
 }
 
