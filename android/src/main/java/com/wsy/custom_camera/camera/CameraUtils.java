@@ -168,7 +168,7 @@ public class CameraUtils {
     public void takePhoto(final String path, final MethodChannel.Result result) {
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
+            public void onPictureTaken(final byte[] data, Camera camera) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
