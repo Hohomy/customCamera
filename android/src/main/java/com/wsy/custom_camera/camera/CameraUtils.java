@@ -172,44 +172,50 @@ public class CameraUtils {
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
-                try {
-                    File file;
-                    if (path==null || path.isEmpty()) {
-                        File externalStorageDirectory = Environment.getExternalStorageDirectory();
-                        long timeMillis = System.currentTimeMillis();
-                        File dir = new File(externalStorageDirectory, "网商园");
-                        if (!dir.exists()) {
-                            dir.mkdirs();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            File file;
+                            if (path==null || path.isEmpty()) {
+                                File externalStorageDirectory = Environment.getExternalStorageDirectory();
+                                long timeMillis = System.currentTimeMillis();
+                                File dir = new File(externalStorageDirectory, "网商园");
+                                if (!dir.exists()) {
+                                    dir.mkdirs();
+                                }
+                                file = new File(dir,  "wsy" + timeMillis + ".jpg");
+                            } else {
+                                file = new File(path);
+                            }
+                            if (!file.exists()) {
+                                file.createNewFile();
+                            }
+
+                            Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(-90);
+                            Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
+
+                            FileOutputStream fos = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                            fos.flush();
+                            fos.close();
+
+                            bitmap.recycle();
+                            bitmapCache.recycle();
+
+                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                            Uri contentUri = Uri.fromFile(file);
+                            mediaScanIntent.setData(contentUri);
+                            mContext.sendBroadcast(mediaScanIntent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        file = new File(dir,  "wsy" + timeMillis + ".jpg");
-                    } else {
-                        file = new File(path);
+                        result.success(200);
+                        mCamera.startPreview();
                     }
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-
-                    Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    Matrix matrix = new Matrix();
-                    matrix.postRotate(-90);
-                    Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
-
-                    FileOutputStream fos = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    fos.flush();
-                    fos.close();
-
-                    bitmap.recycle();
-                    bitmapCache.recycle();
-
-                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                    Uri contentUri = Uri.fromFile(file);
-                    mediaScanIntent.setData(contentUri);
-                    mContext.sendBroadcast(mediaScanIntent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                result.success(200);
+                }).start();
             }
         });
     }
