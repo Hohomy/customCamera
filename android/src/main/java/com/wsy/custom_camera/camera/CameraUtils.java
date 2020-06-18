@@ -71,7 +71,6 @@ public class CameraUtils {
     private void setPreviewSize(Camera.Parameters parameters) {
         List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
         mCameraSize = sizeList.get(0);
-        Log.d("Tag", "camera " + mWidth + " === " + mHeight);
         for (int i = 1; i < sizeList.size(); i++) {
             Camera.Size nextSize = sizeList.get(i);
             int currentDif = Math.abs(mCameraSize.width * mCameraSize.height - mWidth * mHeight);
@@ -79,11 +78,9 @@ public class CameraUtils {
             if (nextDif < currentDif) {
                 mCameraSize = nextSize;
             }
-            Log.d("Tag", "cameraSize " + nextSize.width + " === " + nextSize.height);
             if (nextDif==0 || currentDif==0)
                 break;
         }
-        Log.d("Tag", "cameraFinal " + mCameraSize.width + " === " + mCameraSize.height);
         parameters.setPreviewSize(mCameraSize.width, mCameraSize.height);
     }
 
@@ -205,15 +202,14 @@ public class CameraUtils {
                             bitmap.recycle();
                             bitmapCache.recycle();
 
-                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                            Uri contentUri = Uri.fromFile(file);
-                            mediaScanIntent.setData(contentUri);
-                            mContext.sendBroadcast(mediaScanIntent);
+//                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                            Uri contentUri = Uri.fromFile(file);
+//                            mediaScanIntent.setData(contentUri);
+//                            mContext.sendBroadcast(mediaScanIntent);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         result.success(200);
-                        mCamera.startPreview();
                     }
                 }).start();
             }
