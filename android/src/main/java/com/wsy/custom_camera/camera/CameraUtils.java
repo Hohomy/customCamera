@@ -166,7 +166,7 @@ public class CameraUtils {
         return mCameraSize;
     }
 
-    public void takePhoto(String path) {
+    public void takePhoto(final String path) {
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
