@@ -56,7 +56,7 @@
     } else if ([[call method] isEqualToString:@"takePhoto"]) {
         NSDictionary *dic =  (NSDictionary *)call.arguments;
         if (dic[@"path"]) {
-            [self takePhoto:dic[@"path"]];
+            [self takePhoto:dic[@"path"] result:result];
             result(@"success");
         }
     } else {
@@ -129,7 +129,7 @@
     return nil;
 }
 
-- (void)takePhoto:(NSString *)path {
+- (void)takePhoto:(NSString *)path result:(FlutterResult)result {
     AVCaptureConnection *conntion = [self.imageOutput connectionWithMediaType:AVMediaTypeVideo];
       if (!conntion) {
           NSLog(@"拍照失败!");
@@ -142,7 +142,12 @@
         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
         UIImage *image = [UIImage imageWithData:imageData];
         [self.session stopRunning];
-        [UIImageJPEGRepresentation(image, 0.5) writeToFile:path atomically:true];
+        bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
+         if (!success) {
+           result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
+           return;
+         }
+         result(nil);
     }];
 }
 
