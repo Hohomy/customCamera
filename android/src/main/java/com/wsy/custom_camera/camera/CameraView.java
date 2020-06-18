@@ -66,8 +66,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, P
         setLayoutParams(layoutParams);
     }
 
-    public void takePhoto(String path) {
-        mCameraUtils.takePhoto(path);
+    public void takePhoto(String path, MethodChannel.Result result) {
+        mCameraUtils.takePhoto(path, result);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, P
         String method = methodCall.method;
         HashMap<String, String> arguments = (HashMap<String, String>) methodCall.arguments;
         if (method.equals("takePhoto")) {
-            takePhoto(arguments.get("path"));
+            takePhoto(arguments.get("path"), result);
         }
     }
 }

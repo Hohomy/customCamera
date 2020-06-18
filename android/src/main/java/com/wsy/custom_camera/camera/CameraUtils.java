@@ -18,6 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import io.flutter.plugin.common.MethodChannel;
+
 public class CameraUtils {
 
     private Context mContext;
@@ -166,7 +168,7 @@ public class CameraUtils {
         return mCameraSize;
     }
 
-    public void takePhoto(final String path) {
+    public void takePhoto(final String path, final MethodChannel.Result result) {
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
@@ -207,6 +209,7 @@ public class CameraUtils {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                result.success(200);
             }
         });
     }
