@@ -73,22 +73,24 @@ public class CameraUtils {
 
     private void setPreviewSize(Camera.Parameters parameters) {
         List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
+        int widthPixels = mContext.getResources().getDisplayMetrics().widthPixels;
+        int heightPixels = mContext.getResources().getDisplayMetrics().heightPixels;
         mCameraSize = sizeList.get(0);
         for (int i = 1; i < sizeList.size(); i++) {
-//            Camera.Size nextSize = sizeList.get(i);
-//            int currentDif = Math.abs(mCameraSize.width * mCameraSize.height - mWidth * mHeight);
-//            int nextDif = Math.abs(nextSize.width * nextSize.height - mWidth * mHeight);
-//            if (nextDif < currentDif) {
-//                mCameraSize = nextSize;
-//            }
-//            if (nextDif==0 || currentDif==0)
-//                break;
-
             Camera.Size nextSize = sizeList.get(i);
-            Log.d("Tag", "cameraSize ======= " + nextSize.width + " ===== " + nextSize.height);
-            if (nextSize.width*nextSize.height >= mCameraSize.width*mCameraSize.height) {
+            int currentDif = Math.abs(mCameraSize.width * mCameraSize.height - widthPixels * heightPixels);
+            int nextDif = Math.abs(nextSize.width * nextSize.height - widthPixels * heightPixels);
+            if (nextDif < currentDif) {
                 mCameraSize = nextSize;
             }
+            if (nextDif==0 || currentDif==0)
+                break;
+
+//            Camera.Size nextSize = sizeList.get(i);
+            Log.d("Tag", "cameraSize ======= " + nextSize.width + " ===== " + nextSize.height);
+//            if (nextSize.width*nextSize.height >= mCameraSize.width*mCameraSize.height) {
+//                mCameraSize = nextSize;
+//            }
         }
         Log.d("Tag", "cameraSize final ======= " + mCameraSize.width + " ===== " + mCameraSize.height);
         parameters.setPreviewSize(mCameraSize.width, mCameraSize.height);
