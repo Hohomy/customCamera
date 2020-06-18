@@ -75,7 +75,6 @@ public class CameraUtils {
         List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
         int widthPixels = mContext.getResources().getDisplayMetrics().widthPixels;
         int heightPixels = mContext.getResources().getDisplayMetrics().heightPixels;
-        Log.d("Tag", "cameraSize display ======= " + widthPixels + " ===== " + heightPixels);
         mCameraSize = sizeList.get(0);
         for (int i = 1; i < sizeList.size(); i++) {
             Camera.Size nextSize = sizeList.get(i);
@@ -86,14 +85,7 @@ public class CameraUtils {
             }
             if (nextDif==0 || currentDif==0)
                 break;
-
-//            Camera.Size nextSize = sizeList.get(i);
-            Log.d("Tag", "cameraSize ======= " + nextSize.width + " ===== " + nextSize.height);
-//            if (nextSize.width*nextSize.height >= mCameraSize.width*mCameraSize.height) {
-//                mCameraSize = nextSize;
-//            }
         }
-        Log.d("Tag", "cameraSize final ======= " + mCameraSize.width + " ===== " + mCameraSize.height);
         parameters.setPreviewSize(mCameraSize.width, mCameraSize.height);
     }
 
@@ -164,7 +156,7 @@ public class CameraUtils {
             mCamera.stopPreview();
             mCamera.setPreviewDisplay(surfaceHolder);
             mCamera.startPreview();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
