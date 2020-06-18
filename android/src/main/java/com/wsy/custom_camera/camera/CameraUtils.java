@@ -75,6 +75,7 @@ public class CameraUtils {
         List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
         int widthPixels = mContext.getResources().getDisplayMetrics().widthPixels;
         int heightPixels = mContext.getResources().getDisplayMetrics().heightPixels;
+        Log.d("Tag", "cameraSize display ======= " + widthPixels + " ===== " + heightPixels);
         mCameraSize = sizeList.get(0);
         for (int i = 1; i < sizeList.size(); i++) {
             Camera.Size nextSize = sizeList.get(i);
