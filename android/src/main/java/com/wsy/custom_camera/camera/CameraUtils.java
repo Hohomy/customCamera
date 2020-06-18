@@ -85,10 +85,12 @@ public class CameraUtils {
 //                break;
 
             Camera.Size nextSize = sizeList.get(i);
+            Log.d("Tag", "cameraSize ======= " + nextSize.width + " ===== " + nextSize.height);
             if (nextSize.width*nextSize.height >= mCameraSize.width*mCameraSize.height) {
                 mCameraSize = nextSize;
             }
         }
+        Log.d("Tag", "cameraSize final ======= " + mCameraSize.width + " ===== " + mCameraSize.height);
         parameters.setPreviewSize(mCameraSize.width, mCameraSize.height);
     }
 
