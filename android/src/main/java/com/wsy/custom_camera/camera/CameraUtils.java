@@ -10,6 +10,7 @@ import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -31,9 +32,11 @@ public class CameraUtils {
     private int mRotation;
     private byte[] mBuffer;
     private byte[] mBufferRevise;
+    private Handler mHandler;
 
     public CameraUtils(Context context) {
         this.mContext = context;
+        mHandler = new Handler();
     }
 
     public void setSurfaceView(int width, int height, SurfaceHolder surfaceHolder) {
@@ -159,6 +162,7 @@ public class CameraUtils {
         mCamera.setPreviewCallbackWithBuffer(null);
         mCamera.stopPreview();
         mCamera.release();
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     public Camera.Size getCameraSize() {
@@ -209,7 +213,12 @@ public class CameraUtils {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        result.success(200);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                result.success(200);
+                            }
+                        });
                     }
                 }).start();
             }
