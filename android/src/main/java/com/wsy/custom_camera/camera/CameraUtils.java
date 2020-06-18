@@ -79,8 +79,8 @@ public class CameraUtils {
         mCameraSize = sizeList.get(0);
         for (int i = 1; i < sizeList.size(); i++) {
             Camera.Size nextSize = sizeList.get(i);
-            float currentDif = Math.abs(mCameraSize.width *1.0f / mCameraSize.height - widthPixels *1.0f / heightPixels);
-            float nextDif = Math.abs(nextSize.width * 1.0f / nextSize.height - widthPixels * 1.0f / heightPixels);
+            float currentDif = Math.abs(mCameraSize.width *1.0f / mCameraSize.height - heightPixels *1.0f / widthPixels);
+            float nextDif = Math.abs(nextSize.width * 1.0f / nextSize.height - heightPixels * 1.0f / widthPixels);
             if (nextDif < currentDif) {
                 mCameraSize = nextSize;
             }
