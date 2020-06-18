@@ -227,7 +227,7 @@ public class CameraUtils {
                             @Override
                             public void run() {
                                 result.success(200);
-                                camera.startPreview();
+                                mCamera.startPreview();
                             }
                         });
                     }
