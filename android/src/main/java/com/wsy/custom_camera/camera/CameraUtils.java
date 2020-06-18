@@ -85,7 +85,7 @@ public class CameraUtils {
 //                break;
 
             Camera.Size nextSize = sizeList.get(i);
-            if (mCameraSize.height < nextSize.height) {
+            if (mCameraSize.width < nextSize.width) {
                 mCameraSize = nextSize;
             }
         }
@@ -112,6 +112,7 @@ public class CameraUtils {
             result = (info.orientation - degrees + 360) % 360;
         }
         mCamera.setDisplayOrientation(result);
+        mRotation = result;
     }
 
     private void reviseData(byte[] data) {
@@ -198,23 +199,23 @@ public class CameraUtils {
                                 file.createNewFile();
                             }
 
-//                            Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
-//                            Matrix matrix = new Matrix();
-//                            matrix.postRotate(-90);
-//                            Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
-//
-//                            FileOutputStream fos = new FileOutputStream(file);
-//                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//                            fos.flush();
-//                            fos.close();
-//
-//                            bitmap.recycle();
-//                            bitmapCache.recycle();
+                            Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(mRotation);
+                            Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
 
                             FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(data);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                             fos.flush();
                             fos.close();
+
+                            bitmap.recycle();
+                            bitmapCache.recycle();
+
+//                            FileOutputStream fos = new FileOutputStream(file);
+//                            fos.write(data);
+//                            fos.flush();
+//                            fos.close();
 
 //                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 //                            Uri contentUri = Uri.fromFile(file);
