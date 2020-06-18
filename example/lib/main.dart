@@ -53,18 +53,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Stack(children: <Widget>[
-            CameraPreview(controller: _c,),
-            Positioned(
-                bottom: 30,
-                child: FloatingActionButton(
-                  onPressed: (){
-                    _c.takePhoto();
-                  },
-                )
-            )
-
-          ],),
+          child: CameraPreview(controller: _c,)
         ),
       ),
     );

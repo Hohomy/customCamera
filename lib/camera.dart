@@ -19,8 +19,8 @@ class CameraController {
     return _channel.invokeMethod('stop');
   }
 
-  Future<void> takePhoto() async {
-    return _channel.invokeMethod('takePhoto');
+  Future<void> takePhoto(String path) async {
+    return _channel.invokeMethod('takePhoto', {"path": path});
   }
 
 }

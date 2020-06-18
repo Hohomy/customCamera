@@ -166,18 +166,23 @@ public class CameraUtils {
         return mCameraSize;
     }
 
-    public void takePhoto() {
+    public void takePhoto(String path) {
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
                 try {
-                    File externalStorageDirectory = Environment.getExternalStorageDirectory();
-                    long timeMillis = System.currentTimeMillis();
-                    File dir = new File(externalStorageDirectory, "网商园");
-                    if (!dir.exists()) {
-                        dir.mkdirs();
+                    File file;
+                    if (path==null || path.isEmpty()) {
+                        File externalStorageDirectory = Environment.getExternalStorageDirectory();
+                        long timeMillis = System.currentTimeMillis();
+                        File dir = new File(externalStorageDirectory, "网商园");
+                        if (!dir.exists()) {
+                            dir.mkdirs();
+                        }
+                        file = new File(dir,  "wsy" + timeMillis + ".jpg");
+                    } else {
+                        file = new File(path);
                     }
-                    File file = new File(dir,  "wsy" + timeMillis + ".jpg");
                     if (!file.exists()) {
                         file.createNewFile();
                     }

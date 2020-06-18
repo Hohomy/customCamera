@@ -8,6 +8,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.HashMap;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
@@ -64,8 +66,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, P
         setLayoutParams(layoutParams);
     }
 
-    public void takePhoto() {
-        mCameraUtils.takePhoto();
+    public void takePhoto(String path) {
+        mCameraUtils.takePhoto(path);
     }
 
     @Override
@@ -86,8 +88,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, P
     @Override
     public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
         String method = methodCall.method;
+        HashMap<String, String> arguments = (HashMap<String, String>) methodCall.arguments;
         if (method.equals("takePhoto")) {
-            takePhoto();
+            takePhoto(arguments.get("path"));
         }
     }
 }
