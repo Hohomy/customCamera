@@ -75,14 +75,19 @@ public class CameraUtils {
         List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
         mCameraSize = sizeList.get(0);
         for (int i = 1; i < sizeList.size(); i++) {
+//            Camera.Size nextSize = sizeList.get(i);
+//            int currentDif = Math.abs(mCameraSize.width * mCameraSize.height - mWidth * mHeight);
+//            int nextDif = Math.abs(nextSize.width * nextSize.height - mWidth * mHeight);
+//            if (nextDif < currentDif) {
+//                mCameraSize = nextSize;
+//            }
+//            if (nextDif==0 || currentDif==0)
+//                break;
+
             Camera.Size nextSize = sizeList.get(i);
-            int currentDif = Math.abs(mCameraSize.width * mCameraSize.height - mWidth * mHeight);
-            int nextDif = Math.abs(nextSize.width * nextSize.height - mWidth * mHeight);
-            if (nextDif < currentDif) {
+            if (mCameraSize.height < nextSize.height) {
                 mCameraSize = nextSize;
             }
-            if (nextDif==0 || currentDif==0)
-                break;
         }
         parameters.setPreviewSize(mCameraSize.width, mCameraSize.height);
     }
@@ -193,18 +198,23 @@ public class CameraUtils {
                                 file.createNewFile();
                             }
 
-                            Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            Matrix matrix = new Matrix();
-                            matrix.postRotate(-90);
-                            Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
+//                            Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
+//                            Matrix matrix = new Matrix();
+//                            matrix.postRotate(-90);
+//                            Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
+//
+//                            FileOutputStream fos = new FileOutputStream(file);
+//                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                            fos.flush();
+//                            fos.close();
+//
+//                            bitmap.recycle();
+//                            bitmapCache.recycle();
 
                             FileOutputStream fos = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                            fos.write(data);
                             fos.flush();
                             fos.close();
-
-                            bitmap.recycle();
-                            bitmapCache.recycle();
 
 //                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 //                            Uri contentUri = Uri.fromFile(file);
@@ -217,6 +227,7 @@ public class CameraUtils {
                             @Override
                             public void run() {
                                 result.success(200);
+                                camera.startPreview();
                             }
                         });
                     }
