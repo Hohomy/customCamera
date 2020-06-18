@@ -85,7 +85,7 @@ public class CameraUtils {
 //                break;
 
             Camera.Size nextSize = sizeList.get(i);
-            if (mCameraSize.width < nextSize.width) {
+            if (nextSize.width*nextSize.height >= mCameraSize.width*mCameraSize.height) {
                 mCameraSize = nextSize;
             }
         }
