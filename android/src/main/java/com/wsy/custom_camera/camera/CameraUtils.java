@@ -10,6 +10,7 @@ import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -31,9 +32,11 @@ public class CameraUtils {
     private int mRotation;
     private byte[] mBuffer;
     private byte[] mBufferRevise;
+    private Handler mHandler;
 
     public CameraUtils(Context context) {
         this.mContext = context;
+        mHandler = new Handler();
     }
 
     public void setSurfaceView(int width, int height, SurfaceHolder surfaceHolder) {
@@ -70,20 +73,19 @@ public class CameraUtils {
 
     private void setPreviewSize(Camera.Parameters parameters) {
         List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
+        int widthPixels = mContext.getResources().getDisplayMetrics().widthPixels;
+        int heightPixels = mContext.getResources().getDisplayMetrics().heightPixels;
         mCameraSize = sizeList.get(0);
-        Log.d("Tag", "camera " + mWidth + " === " + mHeight);
         for (int i = 1; i < sizeList.size(); i++) {
             Camera.Size nextSize = sizeList.get(i);
-            int currentDif = Math.abs(mCameraSize.width * mCameraSize.height - mWidth * mHeight);
-            int nextDif = Math.abs(nextSize.width * nextSize.height - mWidth * mHeight);
+            float currentDif = Math.abs(mCameraSize.width *1.0f / mCameraSize.height - heightPixels *1.0f / widthPixels);
+            float nextDif = Math.abs(nextSize.width * 1.0f / nextSize.height - heightPixels * 1.0f / widthPixels);
             if (nextDif < currentDif) {
                 mCameraSize = nextSize;
             }
-            Log.d("Tag", "cameraSize " + nextSize.width + " === " + nextSize.height);
             if (nextDif==0 || currentDif==0)
                 break;
         }
-        Log.d("Tag", "cameraFinal " + mCameraSize.width + " === " + mCameraSize.height);
         parameters.setPreviewSize(mCameraSize.width, mCameraSize.height);
     }
 
@@ -107,6 +109,7 @@ public class CameraUtils {
             result = (info.orientation - degrees + 360) % 360;
         }
         mCamera.setDisplayOrientation(result);
+        mRotation = result;
     }
 
     private void reviseData(byte[] data) {
@@ -153,7 +156,7 @@ public class CameraUtils {
             mCamera.stopPreview();
             mCamera.setPreviewDisplay(surfaceHolder);
             mCamera.startPreview();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -162,6 +165,7 @@ public class CameraUtils {
         mCamera.setPreviewCallbackWithBuffer(null);
         mCamera.stopPreview();
         mCamera.release();
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     public Camera.Size getCameraSize() {
@@ -171,45 +175,61 @@ public class CameraUtils {
     public void takePhoto(final String path, final MethodChannel.Result result) {
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
-                try {
-                    File file;
-                    if (path==null || path.isEmpty()) {
-                        File externalStorageDirectory = Environment.getExternalStorageDirectory();
-                        long timeMillis = System.currentTimeMillis();
-                        File dir = new File(externalStorageDirectory, "网商园");
-                        if (!dir.exists()) {
-                            dir.mkdirs();
+            public void onPictureTaken(final byte[] data, Camera camera) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            File file;
+                            if (path==null || path.isEmpty()) {
+                                File externalStorageDirectory = Environment.getExternalStorageDirectory();
+                                long timeMillis = System.currentTimeMillis();
+                                File dir = new File(externalStorageDirectory, "网商园");
+                                if (!dir.exists()) {
+                                    dir.mkdirs();
+                                }
+                                file = new File(dir,  "wsy" + timeMillis + ".jpg");
+                            } else {
+                                file = new File(path);
+                            }
+                            if (!file.exists()) {
+                                file.createNewFile();
+                            }
+
+                            Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(mRotation);
+                            Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
+
+                            FileOutputStream fos = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                            fos.flush();
+                            fos.close();
+
+                            bitmap.recycle();
+                            bitmapCache.recycle();
+
+//                            FileOutputStream fos = new FileOutputStream(file);
+//                            fos.write(data);
+//                            fos.flush();
+//                            fos.close();
+
+//                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                            Uri contentUri = Uri.fromFile(file);
+//                            mediaScanIntent.setData(contentUri);
+//                            mContext.sendBroadcast(mediaScanIntent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        file = new File(dir,  "wsy" + timeMillis + ".jpg");
-                    } else {
-                        file = new File(path);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                result.success(200);
+                                mCamera.startPreview();
+                            }
+                        });
                     }
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-
-                    Bitmap bitmapCache = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    Matrix matrix = new Matrix();
-                    matrix.postRotate(-90);
-                    Bitmap bitmap = Bitmap.createBitmap(bitmapCache, 0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(), matrix, false);
-
-                    FileOutputStream fos = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    fos.flush();
-                    fos.close();
-
-                    bitmap.recycle();
-                    bitmapCache.recycle();
-
-                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                    Uri contentUri = Uri.fromFile(file);
-                    mediaScanIntent.setData(contentUri);
-                    mContext.sendBroadcast(mediaScanIntent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                result.success(200);
+                }).start();
             }
         });
     }
