@@ -35,15 +35,15 @@
       arguments:(id _Nullable)args
                   binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
     if (self) {
-            NSString *channelName = [NSString stringWithFormat:@"plugins/custom_camera_%lld", viewId];
-            _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
+        NSString *channelName = [NSString stringWithFormat:@"plugins/custom_camera_%lld", viewId];
+        _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
 
-            __weak __typeof__(self) weakSelf = self;
-            [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
-              if (weakSelf) {
-                [weakSelf onMethodCall:call result:result];
-              }
-            }];
+        __weak __typeof__(self) weakSelf = self;
+        [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+            if (weakSelf) {
+              [weakSelf onMethodCall:call result:result];
+            }
+        }];
     }
     return self;
 }
@@ -66,50 +66,39 @@
 - (UIView *)bgView {
     if (!_bgView) {
         _bgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height)];
-            _device = [self cameraWithPosition:AVCaptureDevicePositionBack];
-            _input = [[AVCaptureDeviceInput alloc] initWithDevice:_device error:nil];
-            _imageOutput = [[AVCaptureStillImageOutput alloc] init];
-            _session = [[AVCaptureSession alloc] init];
-                //     拿到的图像的大小可以自行设定
-                //    AVCaptureSessionPreset320x240
-                //    AVCaptureSessionPreset352x288
-                //    AVCaptureSessionPreset640x480
-                //    AVCaptureSessionPreset960x540
-                //    AVCaptureSessionPreset1280x720
-                //    AVCaptureSessionPreset1920x1080
-                //    AVCaptureSessionPreset3840x2160
-        if (@available(iOS 9.0, *)) {
-            _session.sessionPreset = AVCaptureSessionPreset3840x2160;
-        } else {
-            // Fallback on earlier versions
+            
+        _device = [self cameraWithPosition:AVCaptureDevicePositionBack];
+        _input = [[AVCaptureDeviceInput alloc] initWithDevice:_device error:nil];
+        _imageOutput = [[AVCaptureStillImageOutput alloc] init];
+        _session = [[AVCaptureSession alloc] init];
+ 
+        // 输入输出设备结合
+        if ([_session canAddInput:_input]) {
+            [_session addInput:_input];
         }
-                //输入输出设备结合
-                if ([_session canAddInput:_input]) {
-                    [_session addInput:_input];
-                }
-                if ([_session canAddOutput:_imageOutput]) {
-                    [_session addOutput:_imageOutput];
-                }
-                //预览层的生成
-               _previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_session];
+        if ([_session canAddOutput:_imageOutput]) {
+            [_session addOutput:_imageOutput];
+        }
+        // 预览层的生成
+        _previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_session];
 
-               CALayer * layer = _bgView.layer;
-               _previewLayer.frame = layer.bounds;
-               _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-               [layer insertSublayer:_previewLayer atIndex:0];
-                //设备取景开始
-                [_session startRunning];
-        //        if ([_device lockForConfiguration:nil]) {
-        //        //自动闪光灯，
-        //            if ([_device isFlashModeSupported:AVCaptureFlashModeAuto]) {
-        //                [_device setFlashMode:AVCaptureFlashModeAuto];
-        //            }
-        //            //自动白平衡,但是好像一直都进不去
-        //            if ([_device isWhiteBalanceModeSupported:AVCaptureWhiteBalanceModeAutoWhiteBalance]) {
-        //                [_device setWhiteBalanceMode:AVCaptureWhiteBalanceModeAutoWhiteBalance];
-        //            }
-        //            [_device unlockForConfiguration];
-        //        }
+        CALayer * layer = _bgView.layer;
+        _previewLayer.frame = layer.bounds;
+        _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        [layer insertSublayer:_previewLayer atIndex:0];
+        // 设备取景开始
+        [_session startRunning];
+        if ([_device lockForConfiguration:nil]) {
+        // 自动闪光灯
+        if ([_device isFlashModeSupported:AVCaptureFlashModeAuto]) {
+            [_device setFlashMode:AVCaptureFlashModeAuto];
+        }
+        //自动白平衡,但是好像一直都进不去
+        if ([_device isWhiteBalanceModeSupported:AVCaptureWhiteBalanceModeAutoWhiteBalance]) {
+            [_device setWhiteBalanceMode:AVCaptureWhiteBalanceModeAutoWhiteBalance];
+        }
+            [_device unlockForConfiguration];
+        }
         
     }
     return _bgView;
@@ -130,10 +119,10 @@
 
 - (void)takePhoto:(NSString *)path result:(FlutterResult)result {
     AVCaptureConnection *conntion = [self.imageOutput connectionWithMediaType:AVMediaTypeVideo];
-      if (!conntion) {
-          NSLog(@"拍照失败!");
-          return;
-          }
+    if (!conntion) {
+        NSLog(@"拍照失败!");
+        return;
+    }
     [self.imageOutput captureStillImageAsynchronouslyFromConnection:conntion completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
         if (imageDataSampleBuffer == nil) {
             return ;
