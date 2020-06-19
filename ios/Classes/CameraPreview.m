@@ -57,7 +57,6 @@
         NSDictionary *dic =  (NSDictionary *)call.arguments;
         if (dic[@"path"]) {
             [self takePhoto:dic[@"path"] result:result];
-            result(@"success");
         }
     } else {
         result(FlutterMethodNotImplemented);
@@ -141,7 +140,7 @@
         }
         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
         UIImage *image = [UIImage imageWithData:imageData];
-        [self.session stopRunning];
+//        [self.session stopRunning];
         bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
          if (!success) {
            result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
