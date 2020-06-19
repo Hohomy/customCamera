@@ -208,16 +208,6 @@ public class CameraUtils {
 
                             bitmap.recycle();
                             bitmapCache.recycle();
-
-//                            FileOutputStream fos = new FileOutputStream(file);
-//                            fos.write(data);
-//                            fos.flush();
-//                            fos.close();
-
-//                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//                            Uri contentUri = Uri.fromFile(file);
-//                            mediaScanIntent.setData(contentUri);
-//                            mContext.sendBroadcast(mediaScanIntent);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
